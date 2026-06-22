@@ -4,7 +4,6 @@ Bu ma'lumotlar o'zgarmaydi — DB ga saqlash shart emas.
 Flutter api_service.dart: fetchSessions(), fetchLibrary(), fetchKnowledge()
 """
 from fastapi import APIRouter, Query
-from typing import Optional
 
 router = APIRouter(tags=["content"])
 
@@ -186,7 +185,7 @@ def get_sessions():
 
 
 @router.get("/library")
-def get_library(domain_id: Optional[int] = Query(None, alias="domainId")):
+def get_library(domain_id: int | None = Query(None, alias="domainId")):
     if domain_id is None:
         return _LIBRARY
     return [i for i in _LIBRARY if i["domainId"] == domain_id]

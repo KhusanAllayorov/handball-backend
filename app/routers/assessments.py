@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import List
 
 from ..database import get_db
 from ..models.models import Assessment, User
@@ -11,7 +10,7 @@ from ..auth.jwt import get_current_user
 router = APIRouter(prefix="/assessments", tags=["assessments"])
 
 
-@router.get("", response_model=List[AssessmentOut])
+@router.get("", response_model=list[AssessmentOut])
 def list_assessments(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),

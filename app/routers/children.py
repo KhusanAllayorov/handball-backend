@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
 
 from ..database import get_db
 from ..models.models import Child, User
@@ -10,7 +9,19 @@ from ..auth.jwt import get_current_user
 router = APIRouter(prefix="/children", tags=["children"])
 
 
-@router.get("", response_model=List[ChildOut])
+def _owned_child_or_404(db: Session, child_id: int, user: User) -> Child:
+    """Joriy mutaxassisga tegishli bolani qaytaradi, topilmasa 404 chiqaradi."""
+    child = (
+        db.query(Child)
+        .filter(Child.id == child_id, Child.specialist_id == user.id)
+        .first()
+    )
+    if child is None:
+        raise HTTPException(status_code=404, detail="Bola topilmadi")
+    return child
+
+
+@router.get("", response_model=list[ChildOut])
 def list_children(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -38,11 +49,7 @@ def update_child(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    child = db.query(Child).filter(
-        Child.id == child_id, Child.specialist_id == current_user.id
-    ).first()
-    if not child:
-        raise HTTPException(status_code=404, detail="Bola topilmadi")
+    child = _owned_child_or_404(db, child_id, current_user)
     for field, value in body.model_dump(exclude_none=True).items():
         setattr(child, field, value)
     db.commit()
@@ -56,10 +63,6 @@ def delete_child(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    child = db.query(Child).filter(
-        Child.id == child_id, Child.specialist_id == current_user.id
-    ).first()
-    if not child:
-        raise HTTPException(status_code=404, detail="Bola topilmadi")
+    child = _owned_child_or_404(db, child_id, current_user)
     db.delete(child)
     db.commit()

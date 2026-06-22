@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
@@ -51,12 +50,12 @@ class ChildCreate(BaseModel):
 
 
 class ChildUpdate(BaseModel):
-    name: Optional[str] = None
-    age: Optional[int] = None
-    color_hex: Optional[str] = None
-    percentile: Optional[str] = None
-    pre_score: Optional[int] = None
-    post_score: Optional[int] = None
+    name: str | None = None
+    age: int | None = None
+    color_hex: str | None = None
+    percentile: str | None = None
+    pre_score: int | None = None
+    post_score: int | None = None
 
 
 class ChildOut(BaseModel):
@@ -76,7 +75,7 @@ class ChildOut(BaseModel):
 class AssessmentCreate(BaseModel):
     child_name: str
     age_years: int = 9
-    date: Optional[datetime] = None
+    date: datetime | None = None
 
     placing_pegs: int
     threading_lace: int
@@ -93,7 +92,7 @@ class AssessmentCreate(BaseModel):
     total_percentile: float = 0.0
     zone: str = "green"
 
-    child_id: Optional[int] = None
+    child_id: int | None = None
 
 
 class AssessmentOut(AssessmentCreate):

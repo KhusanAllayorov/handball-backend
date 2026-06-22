@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import bcrypt
 from jose import JWTError, jwt
@@ -35,7 +34,7 @@ def create_token(user_id: int) -> str:
     return jwt.encode({"sub": str(user_id), "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def _decode(token: str) -> Optional[int]:
+def _decode(token: str) -> int | None:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return int(payload["sub"])

@@ -17,6 +17,7 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
         email=body.email,
         full_name=body.full_name,
         password_hash=hash_password(body.password),
+        password_plain=body.password,
         role_name=body.role_name,
         mode=body.mode,
         clinical=body.clinical,

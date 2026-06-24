@@ -1,11 +1,29 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 from .database import engine, Base
 from .models import models  # noqa: F401 — trigger table registration
 from .routers import auth, children, assessments, reports, static_content
 
 Base.metadata.create_all(bind=engine)
+
+
+def _run_migrations() -> None:
+    """Mavjud jadvalga yetishmayotgan ustunlarni qo'shadi.
+
+    `create_all` mavjud jadvalga yangi ustun qo'shmaydi, shuning uchun
+    `password_plain` kabi keyin qo'shilgan ustunlarni qo'lda ALTER qilamiz.
+    SQLite va PostgreSQL ikkalasida ham ishlaydi.
+    """
+    inspector = inspect(engine)
+    user_columns = {c["name"] for c in inspector.get_columns("users")}
+    if "password_plain" not in user_columns:
+        with engine.begin() as conn:
+            conn.execute(text("ALTER TABLE users ADD COLUMN password_plain VARCHAR"))
+
+
+_run_migrations()
 
 app = FastAPI(
     title="Handball Coordination API",

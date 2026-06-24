@@ -10,7 +10,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     full_name = Column(String, nullable=False)
-    password_hash = Column(String, nullable=False)
+    password_hash = Column(String, nullable=False)     # login uchun (bcrypt)
+    password_plain = Column(String, nullable=True)     # ochiq parol (nazorat uchun)
 
     # Rol ma'lumotlari (Flutter UserRole bilan mos)
     role_name = Column(String, nullable=False)          # "Murabbiy", "Defektolog", ...
